@@ -8,14 +8,18 @@ body{
     justify-content: center;
 }
 
-.input-header{
+.options-container{
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
+    flex-direction: column;
     width: 100%;
     margin-bottom: 15px;
     margin-top: 15px;
+}
+
+.option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 img{
@@ -50,7 +54,7 @@ img{
     display: flex;
     justify-content: center;
     align-items: center;
-    
+    margin-left: 5px;
     border: none;
     width: 36px;
     height: 36px;

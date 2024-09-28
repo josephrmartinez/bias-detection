@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AskYouTube</title>
+  <title>Bias Detector</title>
   <script src="popup.js"></script>
   <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-  <div class="input-header">
-    <div class="input-container">
-      <input type="text" id="taskInput" placeholder="define task">
-      <button id="generateButton">
-        <img src="images/send.png" alt="" srcset="">
-      </button>    
+  
+  <div class="options-container">
+    
+    <div class="option">
+      <div>Detect Social Bias on This Page</div>
+      <div class="small-button">
+        <img src="images/logo48.png" alt="" srcset="">
+      </div>    
     </div>
 
-    <div class="small-button" id="clipboard">
-      <img src="images/clipboard.png" alt="" srcset="">
+    <div class="option">
+      <div>Generate Report on All Bias Captured</div>
+      <div class="small-button" id="clipboard">
+        <img src="images/clipboard.png" alt="" srcset="">
+      </div>
     </div>
-    <div class="small-button" id="trash">
-      <img src="images/trash.png" alt="" srcset="">
+
+    <div class="option">
+      <div>Clear Bias Data</div>
+      <div class="small-button" id="trash">
+        <img src="images/trash.png" alt="" srcset="">
+      </div>
     </div>
     
     

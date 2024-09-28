@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "AskYouTube",
+  "name": "Bias Detector",
   "version": "0.1",
-  "description": "Perform any task on a YouTube video",
+  "description": "Detect bias across visited webpages",
   "icons": {
-    "16": "images/chat16.png",
-    "32": "images/chat32.png",
-    "48": "images/chat48.png",
-    "96": "images/chat96.png"
+    "16": "images/logo16.png",
+    "32": "images/logo32.png",
+    "48": "images/logo48.png",
+    "96": "images/logo96.png"
   },
   "permissions": [
     "activeTab", "storage", "tabs"
@@ -15,9 +15,9 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "images/chat16.png",
-      "48": "images/chat48.png",
-      "96": "images/chat96.png"
+      "16": "images/logo16.png",
+      "48": "images/logo48.png",
+      "96": "images/logo96.png"
     }
   }
 }
