@@ -267,3 +267,34 @@ async def perform_task(request_data: TextInput):
     except Exception as e:
         print(f"Exception: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to generate response: {str(e)}")
+    
+
+
+# Define the API route for performing a task
+@app.post("/api/get-cumulative-analysis")
+async def perform_task(request_data: TextInput):
+    print("calling get-cumulative-analysis endpoint")
+    user_content = request_data.text
+
+    system_content = "The following object represents cumulative bias that a reader has been exposed to over a series of articles. Come up with an analysis of the social biases that the user is exposing themselves to. Pay particular attention to the subtle ways in which biases show up. Return your analysis as a short, readable analysis. Get straight to the point, do not provide an intro or conclusion."
+    model='gpt-4o-mini'
+
+    openai.api_key = config('OPENAI_API_KEY')
+
+    try:
+        response = openai.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_content},
+                {"role": "user", "content": f"Cumulative bias object: {user_content}"},
+            ],
+            temperature=1,
+        )
+
+        completion_string = response.choices[0].message.content
+
+        return completion_string
+        
+    except Exception as e:
+        print(f"Exception: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate response: {str(e)}")

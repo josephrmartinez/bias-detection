@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log("local storage data:", data)
       if (data.cumulative_biases) {
           // Send data to the API endpoint
-          getCumulativeBiasAnalysis(data.cumulative_biases);
+          getCumulativeBiasAnalysis(JSON.stringify(data.cumulative_biases));
 
         } else {
           console.error('Failed to perform bias analysis');
@@ -204,11 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(response => response.json())
       .then(data => {
         // Handle the response from your server...
-        console.log("response data:", data)
-        const completionText = data.completion.text;
+        console.log("cumulative analysis response data:", data)
+        // const completionText = data.completion.text;
   
-        // once results are available, add them to the popup text
-        updatePopupText(completionText);
+        // // once results are available, add them to the popup text
+        updatePopupText(data);
       })
       .catch(error => {
         console.error('Error:', error);
