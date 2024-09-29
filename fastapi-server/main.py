@@ -41,25 +41,14 @@ def get_youtube_transcript(url):
 
 
 # Define the API route for performing a task
-@app.post("/api/perform-task")
+@app.post("/api/get-analysis")
 async def perform_task(request_data: TaskRequestData):
-    url = request_data.url
-    task = request_data.task
-
-    # Get the YouTube transcript
-    transcript = get_youtube_transcript(url)
+    text = request_data.text
 
     # Declare model variable with gpt-3.5-turbo-1106 as default (16k token context window)
     model = "gpt-3.5-turbo-1106"
 
-    # Count the tokens taken by just the transcript
-    token_count = count_tokens(transcript)
-
-    # Switch to gpt-4-1106-preview model for transcripts over 10k tokens (leaves room for up to 6k output and prompt overhead tokens)
-    if token_count > 10000:
-        model = "gpt-4-1106-preview"
-
-    # Get OpenAI API key from 
+    # Get OpenAI API key 
     openai.api_key = config('OPENAI_API_KEY')
 
     messages = [
@@ -73,23 +62,7 @@ async def perform_task(request_data: TaskRequestData):
             messages=messages
         )
         
-        # Calculate cost based on model selected
-        input_usage = completion.usage['prompt_tokens']
-
-        if model == "gpt-3.5-turbo-1106":
-            input_cost = (input_usage / 1000) * 0.001
-        elif model == "gpt-4-1106-preview":
-            input_cost = (input_usage / 1000) * 0.01
-
-
-        output_usage = completion.usage['completion_tokens']
         
-        if model == "gpt-3.5-turbo-1106":
-            output_cost = (output_usage / 1000) * 0.002
-        elif model == "gpt-4-1106-preview":
-            output_cost = (output_usage / 1000) * 0.03
-
-        total_cost = input_cost + output_cost
 
         return {'completion': {
             'text': completion.choices[0].message['content'], 
