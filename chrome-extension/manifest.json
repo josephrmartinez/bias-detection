@@ -10,7 +10,7 @@
     "96": "images/logo96.png"
   },
   "permissions": [
-    "activeTab", "storage", "tabs"
+    "activeTab", "storage", "tabs", "scripting"
   ],
   "action": {
     "default_popup": "popup.html",

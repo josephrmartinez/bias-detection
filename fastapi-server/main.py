@@ -1,11 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from youtube_transcript_api import YouTubeTranscriptApi
 from pydantic import BaseModel
 import os
 from decouple import config
 import openai
-import tiktoken
+import json
 
 
 app = FastAPI()
@@ -19,55 +18,252 @@ app.add_middleware(
 )
 
 # Create a Pydantic model for the request body
-class TaskRequestData(BaseModel):
-    url: str
-    task: str
+class TextInput(BaseModel):
+    text: str
 
-# Function to count the number of tokens in a given text. Uses gpt 3.5 embedding model
-def count_tokens(text: str):
-    encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
-    num_tokens = len(encoding.encode(text))
-    return num_tokens
-
-# Function to get the YouTube transcript from a given URL
-def get_youtube_transcript(url):
-    print("get_youtube_transcript url:", url)
-    try:
-        transcript = YouTubeTranscriptApi.get_transcript(url)
-        text = " ".join([item['text'] for item in transcript])
-        return text
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get transcript: {str(e)}")
+JSON_schema = {
+    "type": "object",
+    "properties": {
+      "racial_bias": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "gender_bias": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "age_bias": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "religious_bias": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "class_bias": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "disability_bias": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "sexual_orientation_bias": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "cultural_bias": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "body_size_bias": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "nationalism_ethnocentrism": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "intersectional_bias": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "stereotypes": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "unfair_statements": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      },
+      "generalizations": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "excerpt": {
+              "type": "string"
+            },
+            "explanation": {
+              "type": "string"
+            }
+          },
+        },
+      }
+      }
+  }
 
 
 # Define the API route for performing a task
 @app.post("/api/get-analysis")
-async def perform_task(request_data: TaskRequestData):
-    text = request_data.text
+async def perform_task(request_data: TextInput):
+    print("calling get-analysis endpoint")
+    user_content = request_data.text
 
-    # Declare model variable with gpt-3.5-turbo-1106 as default (16k token context window)
-    model = "gpt-3.5-turbo-1106"
+    system_content = "You are a social bias detection tool. Analyze the following text and identify how the narrative contains or perpetuates social biases. You will return your response as a JSON object. Return any text fragments that include the following biases in the narrative: racial_bias, gender_bias, age_bias, religious_bias, class_bias, disability_bias, sexual_orientation_bias, cultural_bias, body_size_bias, marginalism_ethnocentrism, intersectional_bias, also look for 'generalizations', 'unfair_statements', and 'stereotypes'. Return the EXACT TEXT FRAGMENTS that contain these aspects along with an analysis of how that fragment relates to that particular bias."
+    model='gpt-4o-mini'
 
-    # Get OpenAI API key 
     openai.api_key = config('OPENAI_API_KEY')
 
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant. I will provide a transcript of a youtube video and ask you to perform a task."},
-        {"role": "user", "content": f"Perform this task: {task} /// Using the following YouTube transcript:\n\n{transcript} /// Provide a response that includes various HTML elements (h1, h2, li, p, etc.). DO NOT include backticks or 'html' at the beginning or end of response. DO NOT include doctype information, a <title> element, or any new line characters. Just return the HTML ELEMENTS. "}
-    ]
-
     try:
-        completion = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model=model,
-            messages=messages
+            messages=[
+                {"role": "system", "content": system_content},
+                {"role": "user", "content": user_content},
+            ],
+            temperature=1,
+            response_format={"type": "json_object"},
+            tools=[{
+                "type": "function",
+                "function": {
+                    "name": "JSON_biases_detected",
+                    "description":"Extract biases from a given text; return a JSON object",
+                    "parameters": JSON_schema
+                }
+            }],
+            tool_choice={"type": "function", "function": {"name": "JSON_biases_detected"}},
         )
-        
-        
 
-        return {'completion': {
-            'text': completion.choices[0].message['content'], 
-            'cost': total_cost
-            }}
+        completion_string = response.choices[0].message.tool_calls[0].function.arguments
+        
+        try:
+            completion_data = json.loads(completion_string)
+        except json.JSONDecodeError:
+            pass
+
+        return completion_data
+        
     except Exception as e:
         print(f"Exception: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to generate response: {str(e)}")
